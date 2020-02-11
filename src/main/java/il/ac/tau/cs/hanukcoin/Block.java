@@ -14,6 +14,10 @@ package il.ac.tau.cs.hanukcoin;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Class that represnts one block in the block chane.
+ * The clok hods a 36-bytes array and all operations are peformed directly on this array.
+ */
 public class Block {
     public final int BLOCK_SZ = 36;
     public enum BlockError {OK, BAD_SERIAL_NO, SAME_WALLET_PREV, NO_PREV_SIG, SIG_NO_ZEROS, SIG_BAD}
@@ -24,6 +28,14 @@ public class Block {
     public int getWalletNumber() {
         return HanukCoinUtils.intFromBytes(data, 4);
     }
+
+    /**
+     * Creste a block without a signature or puzzle fields.
+     * @param serialNumber
+     * @param walletNumber
+     * @param prevSig8
+     * @return new block
+     */
     public static Block createNoSig(int serialNumber, int walletNumber, byte[] prevSig8) {
         Block b = new Block();
         b.data = new byte[36];
@@ -49,12 +61,19 @@ public class Block {
         HanukCoinUtils.intIntoBytes(data, 20, (int)(longPuzzle & 0xFFFFFFFF));
     }
 
+    /**
+     * given a block signature - take first 12 bytes of it and put into the signature field of this block
+     * @param sig
+     */
     public void setSignaturePart(byte[] sig) {
         System.arraycopy(sig, 0, data, 24, 12);
     }
 
 
-
+    /**
+     * calc block signature based on all fields besides signature itself.
+     * @return  16 byte MD5 signature
+     */
     public byte[] calcSignature() {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");  // may cause NoSuchAlgorithmException
@@ -65,10 +84,18 @@ public class Block {
         }
     }
 
+    /**
+     * getter for internal bytes of block
+     * @return
+     */
     public byte[] getBytes() {
         return data;
     }
 
+    /**
+     * calc signature for the bloxk and see if in has the required number of zeros and matches signature written to the block
+     * @return BlockError: SIG_NO_ZEROS or SIG_BAD or OK
+     */
     public BlockError checkSignature() {
         byte[] sig = calcSignature();
         int serialNum = getSerialNumber();
@@ -82,6 +109,11 @@ public class Block {
         return BlockError.OK;
     }
 
+    /**
+     * given a block oprevios to this one - check if this one is valid.
+     * @param prevBlock
+     * @return BlockError
+     */
     public BlockError checkValidNext(Block prevBlock) {
         if (getSerialNumber() !=  prevBlock.getSerialNumber() + 1) {
             return BlockError.BAD_SERIAL_NO;  // bad serial number - should be prev + 1
@@ -95,6 +127,10 @@ public class Block {
         return checkSignature();
     }
 
+    /**
+     * String with HEX dunp of block for debugging.
+     * @return string - hex dump
+     */
     public String binDump() {
         String dump = "";
         for (int i = 0; i < BLOCK_SZ; i++) {
