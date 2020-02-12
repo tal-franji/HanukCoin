@@ -7,6 +7,8 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import static il.ac.tau.cs.hanukcoin.HanukCoinUtils.mineCoinAtteempt;
+
 
 public class HanukCoinUtilsTest extends TestCase{
     @org.junit.Test
@@ -53,14 +55,14 @@ public class HanukCoinUtilsTest extends TestCase{
         long t3 = System.nanoTime();
         long delta1 = t2 - t1;
         long delta2 = t3 - t2;
+        System.out.println(String.format("time intFromIntoBytes=%d time DataInputStream=%d", delta1, delta2));
         assert(delta2 > 2 * delta1);
-        System.out.println(String.format("d1=%d d2=%d", delta1, delta2));
     }
 
     @org.junit.Test
     public void test_mine() {
         Block genesis = HanukCoinUtils.createBlock0forTestStage();
-        Block newBlock = HanukCoinUtils.mineCoinAtteempt(HanukCoinUtils.walletCode("TEST"), genesis, 10000000);
+        Block newBlock = mineCoinAtteempt(HanukCoinUtils.walletCode("TEST"), genesis, 10000000);
         System.out.println(newBlock.binDump());
     }
 

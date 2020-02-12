@@ -1,6 +1,7 @@
 package il.ac.tau.cs.hanukcoin;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class HanukCoinUtils {
@@ -44,6 +45,12 @@ public class HanukCoinUtils {
         return b1 | b2 | b3 | b4;
     }
 
+    /**
+     * put value in big-endian format into data[offser]
+     * @param data - bytes array
+     * @param offset - offeset into data[] where to write value
+     * @param value - 32 bit value
+     */
     public static void intIntoBytes(byte[] data, int offset, int value) {
         //return data[offset] << 24 | data[offset + 1] << 16 | data[offset + 2] << 8 | data[offset + 3];
         data[offset] = (byte)((value >> 24) & 0xFF);
@@ -66,8 +73,23 @@ public class HanukCoinUtils {
         }
     }
 
+    static private byte[] parseByteStr(String s) {
+        ArrayList<Byte> a = new ArrayList<Byte>();
+        for (String hex : s.split("\\s+")) {
+            byte b = (byte) Integer.parseInt(hex, 16);
+            a.add(b);
+        }
+        byte[] result = new byte[a.size()];
+        for(int i = 0; i < a.size(); i++) {
+            result[i] = a.get(i);
+        }
+        return result;
+    }
+
     public static Block createBlock0forTestStage() {
-        return Block.createNoSig(0, 0, new byte[8]);
+        byte[] puzzle =  parseByteStr("71 16 8F 29  D9 FE DF F9");
+        byte[] sig = parseByteStr("BF 3D AE 1F  65 B0 8F 66 AB 2D B5 1E");
+        return Block.create(0, 0, "TEST_BLK".getBytes(), puzzle, sig);
     }
 
     /**
@@ -129,14 +151,33 @@ public class HanukCoinUtils {
         int newSerialNum = prevBlock.getSerialNumber() + 1;
         byte[] prevSig = new byte[8];
         System.arraycopy(prevSig, 0, prevBlock.getBytes(), 8, 8);
-        Random rand = new Random();
         Block newBlock = Block.createNoSig(newSerialNum, myWalletNum, prevSig);
+        Random rand = new Random();
         for (int attempt= 0; attempt < attemptsCount; attempt++) {
             long puzzle = rand.nextLong();
             newBlock.setLongPuzzle(puzzle);
             Block.BlockError result = newBlock.checkSignature();
             if (result != Block.BlockError.SIG_NO_ZEROS) {
-                System.out.println(String.format("DEBUG>>> %d", attempt));
+                // if enough zeros - we got error because of other reason - e.g. sig field not set yet
+                byte[] sig = newBlock.calcSignature();
+                newBlock.setSignaturePart(sig);
+                // recheck block
+                result = newBlock.checkSignature();
+                if (result != Block.BlockError.OK) {
+                    return null; //failed
+                }
+                return newBlock;
+            }
+        }
+        return null;
+    }
+    public static Block mineCoinAtteempt(Block newBlock, int attemptsCount) {
+        Random rand = new Random();
+        for (int attempt= 0; attempt < attemptsCount; attempt++) {
+            long puzzle = rand.nextLong();
+            newBlock.setLongPuzzle(puzzle);
+            Block.BlockError result = newBlock.checkSignature();
+            if (result != Block.BlockError.SIG_NO_ZEROS) {
                 // if enough zeros - we got error because of other reason - e.g. sig field not set yet
                 byte[] sig = newBlock.calcSignature();
                 newBlock.setSignaturePart(sig);
