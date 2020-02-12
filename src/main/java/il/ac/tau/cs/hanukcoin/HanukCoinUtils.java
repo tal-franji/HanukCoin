@@ -171,24 +171,4 @@ public class HanukCoinUtils {
         }
         return null;
     }
-    public static Block mineCoinAtteempt(Block newBlock, int attemptsCount) {
-        Random rand = new Random();
-        for (int attempt= 0; attempt < attemptsCount; attempt++) {
-            long puzzle = rand.nextLong();
-            newBlock.setLongPuzzle(puzzle);
-            Block.BlockError result = newBlock.checkSignature();
-            if (result != Block.BlockError.SIG_NO_ZEROS) {
-                // if enough zeros - we got error because of other reason - e.g. sig field not set yet
-                byte[] sig = newBlock.calcSignature();
-                newBlock.setSignaturePart(sig);
-                // recheck block
-                result = newBlock.checkSignature();
-                if (result != Block.BlockError.OK) {
-                    return null; //failed
-                }
-                return newBlock;
-            }
-        }
-        return null;
-    }
 }
