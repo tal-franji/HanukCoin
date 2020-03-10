@@ -11,7 +11,7 @@ public class HanukCoinUtils {
      * @param n
      * @return base 2 log of n plus 1
      */
-    public static int log2(long n) {
+    public static int numBits(long n) {
         for(int i =0 ; i < 32; i++) {
             long mask = (1L << i) - 1;
             if ((n & mask) == n) {
@@ -27,7 +27,7 @@ public class HanukCoinUtils {
      * @return number of required zero at end
      */
     public static int numberOfZerosForPuzzle(int blockSerialNumber) {
-        return PUZZLE_BITS0 + log2(blockSerialNumber);
+        return PUZZLE_BITS0 + numBits(blockSerialNumber);
     }
 
     /**
@@ -150,7 +150,7 @@ public class HanukCoinUtils {
     public static Block mineCoinAtteempt(int myWalletNum, Block prevBlock, int attemptsCount) {
         int newSerialNum = prevBlock.getSerialNumber() + 1;
         byte[] prevSig = new byte[8];
-        System.arraycopy(prevSig, 0, prevBlock.getBytes(), 8, 8);
+        System.arraycopy(prevBlock.getBytes(), 24, prevSig, 0, 8);
         Block newBlock = Block.createNoSig(newSerialNum, myWalletNum, prevSig);
         Random rand = new Random();
         for (int attempt= 0; attempt < attemptsCount; attempt++) {
@@ -170,5 +170,37 @@ public class HanukCoinUtils {
             }
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        int numCoins = Integer.parseInt(args[0]);
+        System.out.println(String.format("Mining %d coins...", numCoins));
+        ArrayList<Block> chain = new ArrayList<>();
+        Block genesis = HanukCoinUtils.createBlock0forTestStage();
+        chain.add(genesis);
+        int wallet1 = HanukCoinUtils.walletCode("TEST1");
+        int wallet2 = HanukCoinUtils.walletCode("TEST2");
+
+        for(int i = 0; i < numCoins; i++) {
+            long t1 = System.nanoTime();
+            Block newBlock = null;
+            Block prevBlock = chain.get(i);
+            while (newBlock == null) {
+                newBlock = mineCoinAtteempt(wallet1, prevBlock, 10000000);
+            }
+            int tmp = wallet1;
+            wallet1 = wallet2;
+            wallet2 = tmp;
+            if (newBlock.checkValidNext(prevBlock) != Block.BlockError.OK) {
+                throw new RuntimeException("BAD BLOCK");
+            }
+            chain.add(newBlock);
+            long t2 = System.nanoTime();
+            System.out.println(String.format("mining took =%d milli", (int)((t2 - t1)/10000000)));
+            System.out.println(newBlock.binDump());
+
+        }
+
+
     }
 }

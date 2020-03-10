@@ -12,11 +12,11 @@ import static il.ac.tau.cs.hanukcoin.HanukCoinUtils.mineCoinAtteempt;
 
 public class HanukCoinUtilsTest extends TestCase{
     @org.junit.Test
-    public void test_log2() throws Exception {
-        assertEquals(HanukCoinUtils.log2(0), 0);
-        assertEquals(HanukCoinUtils.log2(32), 6);
-        assertEquals(HanukCoinUtils.log2(31), 5);
-        assertEquals(HanukCoinUtils.log2(5), 3);
+    public void test_numBits() throws Exception {
+        assertEquals(HanukCoinUtils.numBits(0), 0);
+        assertEquals(HanukCoinUtils.numBits(32), 6);
+        assertEquals(HanukCoinUtils.numBits(31), 5);
+        assertEquals(HanukCoinUtils.numBits(5), 3);
     }
 
     @org.junit.Test
@@ -62,7 +62,11 @@ public class HanukCoinUtilsTest extends TestCase{
     @org.junit.Test
     public void test_mine() {
         Block genesis = HanukCoinUtils.createBlock0forTestStage();
+        long t1 = System.nanoTime();
         Block newBlock = mineCoinAtteempt(HanukCoinUtils.walletCode("TEST"), genesis, 10000000);
+        long t2 = System.nanoTime();
+        System.out.println(String.format("mining took =%d milli", (int)((t2 - t1)/10000000)));
+
         System.out.println(newBlock.binDump());
     }
 
