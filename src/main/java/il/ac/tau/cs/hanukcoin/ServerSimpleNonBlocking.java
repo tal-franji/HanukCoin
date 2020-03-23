@@ -85,7 +85,7 @@ class ServerSimpleNonBlocking {
                     }
                     if (firstLine) {
                         firstLine = false;
-                        if (!line.startsWith("GET")) {
+                        if (!line.startsWith("GET / ")) {
                             connectionSocket.close();
                             isActive = false;
                             return;

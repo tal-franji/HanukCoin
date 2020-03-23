@@ -56,7 +56,7 @@ class ServerSimpleThreads {
                     String line = dataInput.readLine();  // This is blocking
                     if (firstLine) {
                         firstLine = false;
-                        if (!line.startsWith("GET")) {
+                        if (!line.startsWith("GET / ")) {
                             return;
                         }
                     }
