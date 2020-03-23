@@ -97,7 +97,7 @@ class ServerSimpleThreads {
         }
     }
 
-    public void run() throws InterruptedException {
+    public void runServer() throws InterruptedException {
         ServerSocketChannel acceptSocket = null;
         try {
             acceptSocket = ServerSocketChannel.open();
@@ -131,7 +131,7 @@ class ServerSimpleThreads {
         }
         ServerSimpleThreads server = new ServerSimpleThreads();
         try {
-            server.run();
+            server.runServer();
         } catch (InterruptedException e) {
             // Exit - Ctrl -C pressed
         }
