@@ -101,7 +101,6 @@ class ServerSimpleThreads {
         ServerSocketChannel acceptSocket = null;
         try {
             acceptSocket = ServerSocketChannel.open();
-            acceptSocket.configureBlocking(false);  // non-blocking to allow loop to handle other things
             acceptSocket.socket().bind(new InetSocketAddress(accepPort));
         } catch (IOException e) {
             System.out.println(String.format("ERROR accepting at port %d", accepPort));
@@ -111,7 +110,7 @@ class ServerSimpleThreads {
         while (true) {
             SocketChannel connectionSocket = null;
             try {
-                connectionSocket = acceptSocket.accept();
+                connectionSocket = acceptSocket.accept(); // this blocks
                 if (connectionSocket != null) {
                     new ClientConnection(connectionSocket.socket(), true).runInThread();
                 }
@@ -119,7 +118,6 @@ class ServerSimpleThreads {
                 System.out.println(String.format("ERROR accept:\n  %s", e.toString()));
                 continue;
             }
-            Thread.sleep(50);
         }
     }
 
