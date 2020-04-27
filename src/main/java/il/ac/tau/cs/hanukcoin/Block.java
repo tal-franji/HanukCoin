@@ -11,6 +11,8 @@ package il.ac.tau.cs.hanukcoin;
      */
 
 
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -19,7 +21,7 @@ import java.security.NoSuchAlgorithmException;
  * The clok hods a 36-bytes array and all operations are peformed directly on this array.
  */
 public class Block {
-    public final int BLOCK_SZ = 36;
+    public static final int BLOCK_SZ = 36;
     public enum BlockError {OK, BAD_SERIAL_NO, SAME_WALLET_PREV, NO_PREV_SIG, SIG_NO_ZEROS, SIG_BAD}
     protected byte[] data;
     public int getSerialNumber() {
@@ -38,7 +40,7 @@ public class Block {
      */
     public static Block createNoSig(int serialNumber, int walletNumber, byte[] prevSig8) {
         Block b = new Block();
-        b.data = new byte[36];
+        b.data = new byte[BLOCK_SZ];
         HanukCoinUtils.intIntoBytes(b.data, 0, serialNumber);
         HanukCoinUtils.intIntoBytes(b.data, 4, walletNumber);
         System.arraycopy(prevSig8, 0, b.data, 8, 8);
@@ -50,6 +52,14 @@ public class Block {
         System.arraycopy(puzzle8, 0, b.data, 16, 8);
         return b;
     }
+
+    public static Block readFrom(DataInputStream dis) throws IOException {
+        Block b = new Block();
+        b.data = new byte[BLOCK_SZ];
+        dis.read(b.data, 0, BLOCK_SZ);
+        return b;
+    }
+
 
     /**
      * put 8 bytes dat into puzzle field
