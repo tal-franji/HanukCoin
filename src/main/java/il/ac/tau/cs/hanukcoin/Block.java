@@ -56,7 +56,7 @@ public class Block {
     public static Block readFrom(DataInputStream dis) throws IOException {
         Block b = new Block();
         b.data = new byte[BLOCK_SZ];
-        dis.read(b.data, 0, BLOCK_SZ);
+        dis.readFully(b.data);
         return b;
     }
 
