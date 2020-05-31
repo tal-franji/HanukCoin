@@ -43,7 +43,7 @@ public class ShowChain2 {
         public static String readLenStr(DataInputStream dis) throws IOException {
             byte strLen = dis.readByte();
             byte[] strBytes = new byte[strLen];
-            dis.read(strBytes, 0, strLen);
+            dis.readFully(strBytes);
             return new String(strBytes, "utf-8");
         }
 
