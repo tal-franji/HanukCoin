@@ -116,8 +116,7 @@ public class HanukCoinUtils {
 			if (sig[sigIndex] != 0) return false;
 			sigIndex -= 1;
 			nZeros -= 8;
-		}
-		if (nZeros == 0) {
+		} if (nZeros == 0) {
 			return true;
 		}
 		//We have several bits to check for zero
