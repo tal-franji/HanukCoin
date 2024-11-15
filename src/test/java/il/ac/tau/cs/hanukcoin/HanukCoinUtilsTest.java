@@ -1,16 +1,14 @@
 package il.ac.tau.cs.hanukcoin;
 
-
-import junit.framework.TestCase;
-
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import static il.ac.tau.cs.hanukcoin.HanukCoinUtils.mineCoinAtteempt;
+import static il.ac.tau.cs.hanukcoin.HanukCoinUtils.mineCoinAttempt;
+import junit.framework.TestCase;
 
+public class HanukCoinUtilsTest extends TestCase {
 
-public class HanukCoinUtilsTest extends TestCase{
     @org.junit.Test
     public void test_numBits() throws Exception {
         assertEquals(HanukCoinUtils.numBits(0), 0);
@@ -34,7 +32,7 @@ public class HanukCoinUtilsTest extends TestCase{
         try {
             assertEquals(dis.readInt(), x);
         } catch (IOException e) {
-            assert(false);
+            assert (false);
         }
         // Checking timing - checking if indeed the coice to use the "less Java way" was correct
         long t1 = System.nanoTime();
@@ -50,28 +48,27 @@ public class HanukCoinUtilsTest extends TestCase{
                 assertEquals(dis.readInt(), x);
             }
         } catch (IOException e) {
-            assert(false);
+            assert (false);
         }
         long t3 = System.nanoTime();
         long delta1 = t2 - t1;
         long delta2 = t3 - t2;
         System.out.println(String.format("time intFromIntoBytes=%d time DataInputStream=%d", delta1, delta2));
-        assert(delta2 > 2 * delta1);
+        assert (delta2 > 2 * delta1);
     }
 
     @org.junit.Test
     public void test_mine() {
         Block genesis = HanukCoinUtils.createBlock0forTestStage();
         long t1 = System.nanoTime();
-        Block newBlock = mineCoinAtteempt(HanukCoinUtils.walletCode("TEST"), genesis, 10000000);
+        Block newBlock = mineCoinAttempt(HanukCoinUtils.walletCode("TEST"), genesis, 10000000);
         long t2 = System.nanoTime();
-        System.out.println(String.format("mining took =%d milli", (int)((t2 - t1)/10000000)));
+        System.out.println(String.format("mining took =%d milli", (int) ((t2 - t1) / 10000000)));
 
         System.out.println(newBlock.binDump());
     }
 
-
-        @org.junit.Test
+    @org.junit.Test
     public void test_numberOfZerosForPuzzle() {
         assertEquals(HanukCoinUtils.numberOfZerosForPuzzle(1000), 30);
     }
