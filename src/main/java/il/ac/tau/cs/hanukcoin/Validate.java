@@ -4,7 +4,7 @@ import java.io.InputStream;
 
 public class Validate {
 
-    public static Block validate(InputStream stream) {
+    public static Block validateBlock(InputStream stream) {
         // TODO
     }
 }
