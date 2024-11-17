@@ -179,6 +179,12 @@ public class HanukCoinUtils {
 		return null;
 	}
 
+	/**
+	 * Checks if a given chain of clocks (aka "BlockChain") is valid
+	 * 
+	 * @param receivedBlocks
+	 * @return validation
+	 */
 	public static boolean checkBlockChainValidation(List<Block> receivedBlocks) {
 		if (receivedBlocks.isEmpty()) {
 			return false;
@@ -190,7 +196,7 @@ public class HanukCoinUtils {
 				return false;
 			}
 			prev = currentBlock;
-		};
+		}
 		return true;
 	}
 
