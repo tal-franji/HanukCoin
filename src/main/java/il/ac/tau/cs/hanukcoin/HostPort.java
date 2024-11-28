@@ -14,6 +14,5 @@ public record HostPort(String host, int port)  {
         m.put(hp, dummyNodeInfo);
         String res = m.get(hp);
         System.out.println(res);
-
     }
 }
